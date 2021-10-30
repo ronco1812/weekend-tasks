@@ -154,7 +154,27 @@ class model{
 
 }
 class view{
-    constructor()
+    constructor(){
+        this.#turn='R';
+        const root=document.getElementById('header');
+        root.append(this.createElement('h1',[],['display-1','d-flex', 'justify-content-center'],{},'4 IN A ROW'))
+        let grid=this.createElement('div',[],["container","board"]);
+        grid.id='grid';
+        root.append(grid);
+        for (let i = 0; i < 7; i++) {
+            let row=this.createElement('div',[],["row"]);
+            row.id=`line ${6-i}`;
+            for (let j = 0; j < 7; j++) {
+                let column=this.createElement('div',[],['col'],{},``);
+                column.id=j;
+                if(i==0)
+                    this.addColorChange(column);
+                row.prepend(column);           
+            }
+            grid.append(row)
+        }
+        console.log(grid)
+    }
 
 }
 class controller{
