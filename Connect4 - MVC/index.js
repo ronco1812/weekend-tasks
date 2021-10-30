@@ -1,6 +1,7 @@
-const root = document.getElementById("root");
+// const root = document.getElementById("root");
 
 class model{
+    #board
     constructor(){
         this.#board=[[],[],[],[],[],[],[]];
         for (let i = 0; i < 7; i++) {
@@ -154,10 +155,11 @@ class model{
 
 }
 class view{
+    #turn
     constructor(){
         this.#turn='R';
         const root=document.getElementById('header');
-        root.append(this.createElement('h1',[],['display-1','d-flex', 'justify-content-center'],{},'4 IN A ROW'))
+        root.append(this.createElement('h1',[],['display-1','d-flex', 'justify-content-center'],{},'Connect 4'))
         let grid=this.createElement('div',[],["container","board"]);
         grid.id='grid';
         root.append(grid);
@@ -183,11 +185,95 @@ class view{
             e.target.style.background='darkgrey';
         });
     }
+    addMove(handleTurn){
+        document.getElementById(`line 6`).addEventListener('click',(e)=>{
+            if(e.target.id!=undefined)
+            {
+                handleTurn(this.#turn,e.target.id);
+                if(this.#turn=='R')
+                this.#turn='O';
+                else
+                this.#turn='R';
+            }
+        })
+    }
+    renderDisplay(newBoard){
+        let grid=document.getElementById('grid');
+        grid.innerHTML=''
+        for (let i = 0; i < 7; i++) {
+            let line=this.createElement('div',[],["row"]);
+            line.id=`line ${6-i}`;
+            for (let j = 0; j < 7; j++) {
+                let column=this.createElement('div',[],['col'],{},``);
+                column.id=j;
+                column.classList.add(`${newBoard[j][6-i].fill}`)
+                if(i==0)
+                    this.addColorChange(column);
+                line.prepend(column);           
+            }
+            grid.append(line)
+        }
+    }
+    renderWin(winner){
+        let p = this.createElement('h4',[],['display-4','d-flex', 'justify-content-center'],{},winner);
+        grid.innerHTML=''
+        grid.append(p);
+        let newBtn=this.createElement('button',[],['btn','btn-outline-info','d-flex', 'justify-content-center'],{type:'button'},'Play again!')
+        newBtn.id='rematch';
+        grid.append(newBtn);
+    }
+    rematch(handleRematch){
+        document.getElementById('rematch').addEventListener('click',(e)=>{
+            handleRematch();
+        })
+    }
+    createElement(tagName ,children = [], classes = [], attributes = {},innerText) {
+    const el = document.createElement(tagName);
+        // Children
+        for(const child of children) {
+            el.append(child);
+        }
+        // Classes
+        for(const cls of classes) {
+            el.classList.add(cls);
+        }
+        // Attributes
+        for (const attr in attributes) {
+            el.setAttribute(attr, attributes[attr]);
+        }
+        if(innerText!=undefined)
+        el.innerText=innerText;
+        return el;
+    }
 
 }
 class controller{
-    constructor()
-
+        #model;
+        #view;
+        constructor(view,model){
+            this.#view=view;    
+            this.#model=model;
+            this.#view.addMove(this.#handleTurn);
+    }
+    #handleTurn=(color,id)=>{
+        let newBoard=this.#model.addKey(color,id);
+        if(!(typeof newBoard === 'string') )
+        {
+            this.#view.renderDisplay(newBoard);
+            this.#view.addMove(this.#handleTurn);
+        }
+        else
+        {
+            this.#view.renderWin(newBoard);
+            this.#view.rematch(this.#playAgain)
+        }
+    }
+    #playAgain=()=>{
+        let newBoard=this.#model.newGame();
+        this.#view.renderDisplay(newBoard);
+        this.#view.addMove(this.#handleTurn);
+    }
 }
+const con = new controller(new view(),new model())
 
 
