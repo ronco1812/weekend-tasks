@@ -175,6 +175,14 @@ class view{
         }
         console.log(grid)
     }
+    addColorChange(col){
+        col.addEventListener('mouseover',(e)=>{
+            e.target.style.background='white';
+        });
+        col.addEventListener('mouseout',(e)=>{
+            e.target.style.background='darkgrey';
+        });
+    }
 
 }
 class controller{
